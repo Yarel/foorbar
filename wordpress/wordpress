@@ -1,0 +1,49 @@
+sudo apt update
+sudo apt install nginx mariadb-server mariadb-client php-common php-fpm php-cli php-gd php-mysql php-intl php-zip php-mbstring php-json php-xml php-xmlrpc php-curl unzip wget git curl -y
+sudo cd /var/www/
+sudo wget https://wordpress.org/latest.tar.gz
+sudo tar -xvf latest.tar.gz
+cd wordpress
+configurar el archivo wp-config-sample.php para nuestra DB RDS-mysql
+sudo cp wp-config-sample.php wp-config.php 
+sudo nano wp-config.php
+sudo nano /etc/nginx/sites-available/wordpress                                                                                                                                                                                         
+------------------------------                                                                                                                                                                                                      
+server {                                                                                                                                                                                                                            
+    listen 80;                                                                                                                                                                                                                      
+    listen [::]:80;                                                                                                                                                                                                                 
+    root /var/www/wordpress;                                                                                                                                                                                                           
+    server_name wordpress.dominio localhost; # change with your own domain                                                                                                                                                             
+                                                                                                                                                                                                                                    
+    index index.php;                                                                                                                                                                                                                
+                                                                                                                                                                                                                                    
+    charset utf-8;                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                    
+    access_log /var/log/nginx/wordpress_access.log;                                                                                                                                                                                    
+    error_log /var/log/nginx/wordpress_error.log;                                                                                                                                                                                      
+                                                                                                                                                                                                                                    
+    location / {                                                                                                                                                                                                                    
+        try_files $uri $uri/ /index.php?$args;                                                                                                                                                                                      
+    }                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                    
+    location ~ .php$ {                                                                                                                                                                                                              
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;                                                                                                                                                                                 
+        fastcgi_index index.php;                                                                                                                                                                                                    
+        include /etc/nginx/fastcgi_params;                                                                        
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include /etc/nginx/fastcgi.conf;
+    }
+                                                         
+}                             
+------------------------------
+                                                         
+sudo nginx -t                                                                                                     
+sudo ln -s /etc/nginx/sites-available/wordpress /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-available/default
+sudo rm /etc/nginx/sites-enabled/default
+sudo systemctl restart nginx.service
+
+sudo apt install python3-acme python3-certbot python3-mock python3-openssl python3-pkg-resources python3-pyparsing python3-zope.interface
+sudo apt install python3-certbot-nginx
+sudo certbot --nginx -d  tudominio
+sudo service nginx restart

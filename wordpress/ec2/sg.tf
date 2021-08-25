@@ -1,11 +1,11 @@
-resource "aws_security_group" "sg_db" {
-  name_prefix = "sg_db"
-  description = ""
-  vpc_id      = "vpc-9be24df0"
+resource "aws_security_group" "sg" {
+  name_prefix = var.project_name
+  description = var.project_name
+  vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 3306
-    to_port     = 3306
+    from_port   = 0
+    to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
